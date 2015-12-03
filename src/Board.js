@@ -167,9 +167,7 @@
       var sum = 0;
 
       return colIndexes.some(function(index) {
-        console.log('value', this.get(rowIndex)[index]);
         sum += this.get(rowIndex)[index]; //row 0, col : 3
-        console.log('sum', sum);
         rowIndex++;
         return sum > 1;
       }, this);
@@ -178,7 +176,6 @@
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
       var colIndexes = _.range(this.get('n') - 1, -1, -1); //[3,2,1,0]
-      console.log('colIndexs', colIndexes);
 
       return colIndexes.some(function(index) {
         return this.hasMinorDiagonalConflictAt(index);
