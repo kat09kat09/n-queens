@@ -116,6 +116,48 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
+  var solution; 
+  var board= new Board({n:n});
+  var originalBoard= new Board ({n:n}); 
+
+
+  //wrap recursion logic in a fxn to call later
+  var theRecursion = function(rowCnt) {
+    //base case
+
+    if (rowCnt === n) {
+      //stop the recursion (down the tree), if the row count is at "n" (aka max row idx)
+
+      // you found a solution!! ==> return that solution board
+      return board.rows(); 
+
+    }
+
+    //recurse 
+    // iterate through decisions
+    for (var i = 0; i < n; i++) {
+      // chosen decision : place your rook at a position
+      board.togglePiece(rowCnt, i);
+
+      //if there are no conflicts based on chosen decision
+      if (!board.hasAnyQueensConflicts()) {
+        //recurse based on the state of the board currently (after your decsiion)
+        var result= theRecursion(rowCnt+1);
+
+        //if you found a solution, stop recursing
+        if(result) {
+          return board.rows(); 
+        }
+      }
+
+      // must clear the board of your most recent decision
+      board.togglePiece(rowCnt, i);
+    }
+  };
+
+  //if a solution is found, that board is returned
+  //otherwise return the original board
+  solution= theRecursion(0) || originalBoard.rows(); 
 
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
