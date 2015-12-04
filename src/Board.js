@@ -135,15 +135,42 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      var colIndexes = _.range(majorDiagonalColumnIndexAtFirstRow, this.get('n')); //[0,1,2,3]
+      var colIndex = majorDiagonalColumnIndexAtFirstRow; 
+      var rowIndexes= _.range(0, this.get('n')); 
+      var colIndexes= _.range(majorDiagonalColumnIndexAtFirstRow, this.get('n')); 
+
       var rowIndex = 0;
       var sum = 0;
+      var topRowConflicts= false;
+      var leftColumnConflicts= false;
 
-      return colIndexes.some(function(index) {
-        sum += this.get(rowIndex)[index];
-        rowIndex++;
-        return sum > 1;
-      }, this);
+      if(colIndex===0) {
+        //need to check major diagonals on each row
+        return rowIndexes.some(function (row) {
+          //check the sum of the diagonal starting at the current row, column 0
+          var sum=0; 
+          var colIdx= 0; 
+
+          for(var i = row; i< this.get('n'); i++) {
+              sum+= this.get(i)[colIdx]; 
+              colIdx++; 
+              //there's a conflict if the sum at anypoint is >1
+              if(sum >1) { return true; }  
+            
+          }
+          return false; 
+        }, this); 
+      } else {
+        //otherwise just need to check major diagonal starting at specified column, row 0
+        return colIndexes.some(function(index) {
+          sum += this.get(rowIndex)[index];
+          rowIndex++;
+          return sum > 1;
+        }, this);
+      }
+
+      
+
     },
 
     // test if any major diagonals on this board contain conflicts
@@ -155,22 +182,38 @@
       }, this);
     },
 
-
-
     // Minor Diagonals - go from top-right to bottom-left
     // --------------------------------------------------------------
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
       var colIndexes = _.range(minorDiagonalColumnIndexAtFirstRow, -1, -1); //[1,0]
+      var rowIndexes= _.range(0, this.get('n')-1); 
       var rowIndex = 0;
       var sum = 0;
 
-      return colIndexes.some(function(index) {
-        sum += this.get(rowIndex)[index]; //row 0, col : 3
-        rowIndex++;
-        return sum > 1;
-      }, this);
+      //if we're checking the last column, need to check all the minor diagonals on that column & every row
+      if(minorDiagonalColumnIndexAtFirstRow=== this.get('n')-1){
+        return rowIndexes.some(function (rowIdx){
+          var sum=0; 
+
+          for(var colIdx=this.get('n')-1; colIdx>=0; colIdx--) {
+            sum+= this.get(rowIdx)[colIdx];
+            rowIdx++; 
+            if(sum >1) { return true; }
+            if(rowIdx > this.get('n')-1) { return false}
+          }
+          return false; 
+        }, this);
+      }else {
+        return colIndexes.some(function(index) {
+          sum += this.get(rowIndex)[index]; //row 0, col : 3
+          rowIndex++;
+          return sum > 1;
+        }, this);  
+      }
+
+      
     },
 
     // test if any minor diagonals on this board contain conflicts
